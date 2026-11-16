@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kuracja kadrów</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cur { max-width: 1400px; margin: 0 auto; padding: 16px; }
+    .cur-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .cur-top h1 { margin-right: auto; }
+    .cur-top label { color: var(--muted); font-size: .85rem; display: flex; align-items: center; gap: 6px; }
+    select { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+    #status { font-size: .85rem; color: var(--muted); min-width: 120px; text-align: right; }
+    #status.bad { color: var(--bad); }
+    .cur-body { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+    #movies { list-style: none; margin: 0; padding: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; max-height: calc(100vh - 110px); overflow-y: auto; position: sticky; top: 16px; }
+    #movies li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 6px; cursor: pointer; font-size: .9rem; }
+    #movies li:hover { background: #222733; }
+    #movies li.active { background: #2b3140; }
+    #movies li.excluded { color: var(--muted); text-decoration: line-through; }
+    #movies .badge { flex: none; font-size: .75rem; padding: 1px 7px; border-radius: 999px; background: #262b36; color: var(--muted); }
+    #movies .badge.ok { background: rgba(62, 207, 142, .15); color: var(--good); }
+    .movie-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .movie-head h2 { margin: 0 auto 0 0; font-size: 1.3rem; }
+    .hint { color: var(--muted); font-size: .85rem; margin: 0 0 12px; }
+    #frames { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+    .frame { position: relative; padding: 0; border: 3px solid transparent; border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
+    .frame:hover { border-color: var(--line); }
+    .frame.on { border-color: var(--good); }
+    .frame img, .frame canvas { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .frame canvas[hidden] { display: none; }
+    .frame canvas { position: absolute; inset: 0; image-rendering: pixelated; }
+    .frame .tag { position: absolute; top: 6px; right: 6px; padding: 1px 7px; border-radius: 999px; font-size: .75rem; background: var(--good); color: #111; font-weight: 600; display: none; }
+    .frame.on .tag { display: block; }
+    .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+    @media (max-width: 760px) {
+      .cur-body { grid-template-columns: 1fr; }
+      #movies { position: static; max-height: 260px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="cur">
+    <header class="cur-top">
+      <h1>Kuracja kadrów</h1>
+      <label>Kategoria <select id="category"></select></label>
+      <label>Pokaż <select id="filter">
+        <option value="all">wszystkie</option>
+        <option value="todo">bez kadrów</option>
+        <option value="done">z kadrami</option>
+        <option value="excluded">wykluczone</option>
+      </select></label>
+      <label>Podgląd <select id="pixel">
+        <option value="0">ostry</option>
+        <option value="8">8 px</option>
+        <option value="16">16 px</option>
+        <option value="32">32 px</option>
+      </select></label>
+      <a href="index.html"><button type="button">Do gry</button></a>
+      <span id="status"></span>
+    </header>
+
+    <div class="cur-body">
+      <ul id="movies"></ul>
+      <section>
+        <div class="movie-head">
+          <h2 id="movie-title">Wybierz film</h2>
+          <button type="button" id="exclude" hidden>Wyklucz z gry</button>
+          <button type="button" id="next-todo">Następny bez kadrów →</button>
+        </div>
+        <p class="hint">Kliknij kadr, żeby dodać go do gry (zielona ramka). Wybieraj prawdziwe kadry z filmu,
+          po których da się go rozpoznać. Gdy kategoria ma co najmniej 10 filmów z wybranymi kadrami, gra losuje tylko spośród nich.
+          Strzałki ↑/↓ zmieniają film.</p>
+        <div id="frames"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="tmdb.js"></script>
+  <script src="categories.js"></script>
+  <script src="curate.js"></script>
+</body>
+</html>
